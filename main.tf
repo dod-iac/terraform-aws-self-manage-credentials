@@ -33,8 +33,7 @@
  * This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.  However, because the project utilizes code licensed from contributors and other third parties, it therefore is licensed under the MIT License.  See LICENSE file for more information.
  */
 
-data "aws_partition" "current" {
-}
+data "aws_partition" "current" {}
 
 data "aws_iam_policy_document" "main" {
   statement {
@@ -53,7 +52,7 @@ data "aws_iam_policy_document" "main" {
       "iam:ChangePassword",
       "iam:GetUser",
     ]
-    resources = ["arn:aws:iam::*:user/$${aws:username}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
   statement {
     sid    = "AllowManageOwnAccessKeys"
@@ -64,7 +63,7 @@ data "aws_iam_policy_document" "main" {
       "iam:ListAccessKeys",
       "iam:UpdateAccessKey",
     ]
-    resources = ["arn:aws:iam::*:user/$${aws:username}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
   statement {
     sid    = "AllowManageOwnSigningCertificates"
@@ -75,7 +74,7 @@ data "aws_iam_policy_document" "main" {
       "iam:UpdateSigningCertificate",
       "iam:UploadSigningCertificate",
     ]
-    resources = ["arn:aws:iam::*:user/$${aws:username}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
   statement {
     sid    = "AllowManageOwnSSHPublicKeys"
@@ -87,7 +86,7 @@ data "aws_iam_policy_document" "main" {
       "iam:UpdateSSHPublicKey",
       "iam:UploadSSHPublicKey",
     ]
-    resources = ["arn:aws:iam::*:user/$${aws:username}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
   statement {
     sid    = "AllowManageOwnGitCredentials"
@@ -99,7 +98,7 @@ data "aws_iam_policy_document" "main" {
       "iam:ResetServiceSpecificCredential",
       "iam:UpdateServiceSpecificCredential",
     ]
-    resources = ["arn:aws:iam::*:user/$${aws:username}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
 }
 
