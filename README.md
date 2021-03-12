@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Usage
 
 Configures IAM policy to allow users to manage their own credentials.
@@ -35,14 +36,28 @@ This project constitutes a work of the United States Government and is not subje
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.13.0 |
-| aws | ~> 3 |
+| terraform | >= 0.13 |
+| aws | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | ~> 3 |
+| aws | ~> 3.0 |
+
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [aws_iam_group_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_group_policy_attachment) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_iam_user_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) |
+| [aws_partition](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) |
 
 ## Inputs
 
@@ -54,4 +69,4 @@ This project constitutes a work of the United States Government and is not subje
 ## Outputs
 
 No output.
-
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
