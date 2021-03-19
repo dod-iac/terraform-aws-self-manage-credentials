@@ -54,51 +54,71 @@ data "aws_iam_policy_document" "main" {
     ]
     resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
   }
-  statement {
-    sid    = "AllowManageOwnAccessKeys"
-    effect = "Allow"
-    actions = [
-      "iam:CreateAccessKey",
-      "iam:DeleteAccessKey",
-      "iam:ListAccessKeys",
-      "iam:UpdateAccessKey",
-    ]
-    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+  dynamic "statement" {
+    for_each = var.allow_access_keys ? [var.allow_access_keys] : []
+    content {
+      sid    = "AllowManageOwnAccessKeys"
+      effect = "Allow"
+      actions = [
+        "iam:CreateAccessKey",
+        "iam:DeleteAccessKey",
+        "iam:ListAccessKeys",
+        "iam:UpdateAccessKey"
+      ]
+      resources = [
+        format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
+      ]
+    }
   }
-  statement {
-    sid    = "AllowManageOwnSigningCertificates"
-    effect = "Allow"
-    actions = [
-      "iam:DeleteSigningCertificate",
-      "iam:ListSigningCertificates",
-      "iam:UpdateSigningCertificate",
-      "iam:UploadSigningCertificate",
-    ]
-    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+  dynamic "statement" {
+    for_each = var.allow_signing_certificates ? [var.allow_signing_certificates] : []
+    content {
+      sid    = "AllowManageOwnSigningCertificates"
+      effect = "Allow"
+      actions = [
+        "iam:DeleteSigningCertificate",
+        "iam:ListSigningCertificates",
+        "iam:UpdateSigningCertificate",
+        "iam:UploadSigningCertificate",
+      ]
+      resources = [
+        format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
+      ]
+    }
   }
-  statement {
-    sid    = "AllowManageOwnSSHPublicKeys"
-    effect = "Allow"
-    actions = [
-      "iam:DeleteSSHPublicKey",
-      "iam:GetSSHPublicKey",
-      "iam:ListSSHPublicKeys",
-      "iam:UpdateSSHPublicKey",
-      "iam:UploadSSHPublicKey",
-    ]
-    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+  dynamic "statement" {
+    for_each = var.allow_ssh_keys ? [var.allow_ssh_keys] : []
+    content {
+      sid    = "AllowManageOwnSSHPublicKeys"
+      effect = "Allow"
+      actions = [
+        "iam:DeleteSSHPublicKey",
+        "iam:GetSSHPublicKey",
+        "iam:ListSSHPublicKeys",
+        "iam:UpdateSSHPublicKey",
+        "iam:UploadSSHPublicKey",
+      ]
+      resources = [
+        format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
+      ]
+    }
   }
-  statement {
-    sid    = "AllowManageOwnGitCredentials"
-    effect = "Allow"
-    actions = [
-      "iam:CreateServiceSpecificCredential",
-      "iam:DeleteServiceSpecificCredential",
-      "iam:ListServiceSpecificCredentials",
-      "iam:ResetServiceSpecificCredential",
-      "iam:UpdateServiceSpecificCredential",
-    ]
-    resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+  dynamic "statement" {
+    for_each = var.allow_git_credentials ? [var.allow_git_credentials] : []
+    content {
+      sid    = "AllowManageOwnGitCredentials"
+      effect = "Allow"
+      actions = [
+        "iam:CreateServiceSpecificCredential",
+        "iam:DeleteServiceSpecificCredential",
+        "iam:ListServiceSpecificCredentials",
+        "iam:ResetServiceSpecificCredential",
+        "iam:UpdateServiceSpecificCredential",
+      ]
+      resources = [
+        format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
+      ]
+    }
   }
 }
 
