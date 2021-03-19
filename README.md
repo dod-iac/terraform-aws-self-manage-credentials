@@ -63,6 +63,10 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| allow\_access\_keys | Allow users to manage their own access keys. | `bool` | `true` | no |
+| allow\_git\_credentials | Allow users to manage their own git credentials. | `bool` | `true` | no |
+| allow\_signing\_certificates | Allow users to manage their own signing certificates. | `bool` | `true` | no |
+| allow\_ssh\_keys | Allow users to manage their own SSH keys. | `bool` | `true` | no |
 | iam\_groups | List of IAM groups to allow access to managing their own crednetials. | `list(string)` | `[]` | no |
 | iam\_users | List of IAM users to allow access to managing their own crednetials. | `list(string)` | `[]` | no |
 
