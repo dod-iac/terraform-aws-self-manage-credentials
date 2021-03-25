@@ -65,7 +65,6 @@ No Modules.
 |------|-------------|------|---------|:--------:|
 | allow\_access\_keys | Allow users to manage their own access keys. | `bool` | `true` | no |
 | allow\_account\_aliases | Allow users to list the account aliases. | `bool` | `true` | no |
-| allow\_account\_summary | Allow users to get the account summary. | `bool` | `true` | no |
 | allow\_git\_credentials | Allow users to manage their own git credentials. | `bool` | `true` | no |
 | allow\_mfa\_device | Allow users to manage their own MFA device. | `bool` | `true` | no |
 | allow\_signing\_certificates | Allow users to manage their own signing certificates. | `bool` | `true` | no |

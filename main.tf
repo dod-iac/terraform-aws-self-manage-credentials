@@ -47,25 +47,6 @@ data "aws_iam_policy_document" "main" {
       resources = ["*"]
     }
   }
-  dynamic "statement" {
-    for_each = var.allow_account_summary ? [var.allow_account_summary] : []
-    content {
-      sid    = "AllowGetAccountSummary"
-      effect = "Allow"
-      actions = [
-        "iam:GetAccountSummary",
-      ]
-      resources = ["*"]
-      dynamic "condition" {
-        for_each = var.require_mfa ? [true] : []
-        content {
-          test     = "Bool"
-          variable = "aws:MultiFactorAuthPresent"
-          values   = ["true"]
-        }
-      }
-    }
-  }
   statement {
     sid    = "AllowGetAccountPasswordPolicy"
     effect = "Allow"

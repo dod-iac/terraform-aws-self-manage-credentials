@@ -1,36 +1,6 @@
-variable "description" {
-  type        = string
-  description = "The description of the AWS IAM policy."
-  default     = "Allows an IAM user to manage their own credentials"
-}
-
-variable "iam_groups" {
-  description = "List of IAM groups to allow access to managing their own credentials."
-  type        = list(string)
-  default     = []
-}
-
-variable "iam_users" {
-  description = "List of IAM users to allow access to managing their own credentials."
-  type        = list(string)
-  default     = []
-}
-
-variable "name" {
-  type        = string
-  description = "Name of the AWS IAM policy."
-  default     = "self-manage-credentials"
-}
-
 variable "allow_account_aliases" {
   type        = bool
   description = "Allow users to list the account aliases."
-  default     = true
-}
-
-variable "allow_account_summary" {
-  type        = bool
-  description = "Allow users to get the account summary."
   default     = true
 }
 
@@ -64,14 +34,38 @@ variable "allow_ssh_keys" {
   default     = true
 }
 
-variable "require_mfa" {
-  type        = bool
-  description = "Requires users to login with MFA when managing their own credentials."
-  default     = true
+variable "description" {
+  type        = string
+  description = "The description of the AWS IAM policy."
+  default     = "Allows an IAM user to manage their own credentials"
 }
 
 variable "enforce_mfa" {
   type        = bool
   description = "Requires users to login with MFA for most AWS actions."
   default     = false
+}
+
+variable "iam_groups" {
+  description = "List of IAM groups to allow access to managing their own credentials."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_users" {
+  description = "List of IAM users to allow access to managing their own credentials."
+  type        = list(string)
+  default     = []
+}
+
+variable "name" {
+  type        = string
+  description = "Name of the AWS IAM policy."
+  default     = "self-manage-credentials"
+}
+
+variable "require_mfa" {
+  type        = bool
+  description = "Requires users to login with MFA when managing their own credentials."
+  default     = true
 }
