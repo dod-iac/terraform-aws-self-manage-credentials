@@ -1,13 +1,13 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Usage
 
-Configures IAM policy to allow users to manage their own credentials.
+Configures IAM policy to allow users to manage their own credentials and optionally enforces MFA.
 
-Policy pulled from [AWS: Allows IAM users to manage their own credentials on the My Security Credentials page](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_my-sec-creds-self-manage-no-mfa.html)
+Policy pulled from [AWS: Allows IAM users to manage their own credentials on the My Security Credentials page](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_my-sec-creds-self-manage-no-mfa.html) but heavily modified.
 
 Creates the following resources:
 
-* IAM policy allowing users to manage their own security credentials.
+* IAM policy allowing users to manage their own security credentials and optionally enforces MFA.
 * IAM group policy attachment for defining which IAM groups can manage their own credentials.
 * IAM user policy attachment for defining which IAM users can manage their own credentials.
 
@@ -64,11 +64,17 @@ No Modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | allow\_access\_keys | Allow users to manage their own access keys. | `bool` | `true` | no |
+| allow\_account\_aliases | Allow users to list the account aliases. | `bool` | `true` | no |
 | allow\_git\_credentials | Allow users to manage their own git credentials. | `bool` | `true` | no |
+| allow\_mfa\_device | Allow users to manage their own MFA device. | `bool` | `true` | no |
 | allow\_signing\_certificates | Allow users to manage their own signing certificates. | `bool` | `true` | no |
 | allow\_ssh\_keys | Allow users to manage their own SSH keys. | `bool` | `true` | no |
-| iam\_groups | List of IAM groups to allow access to managing their own crednetials. | `list(string)` | `[]` | no |
-| iam\_users | List of IAM users to allow access to managing their own crednetials. | `list(string)` | `[]` | no |
+| description | The description of the AWS IAM policy. | `string` | `"Allows an IAM user to manage their own credentials"` | no |
+| enforce\_mfa | Requires users to login with MFA for most AWS actions. | `bool` | `false` | no |
+| iam\_groups | List of IAM groups to allow access to managing their own credentials. | `list(string)` | `[]` | no |
+| iam\_users | List of IAM users to allow access to managing their own credentials. | `list(string)` | `[]` | no |
+| name | Name of the AWS IAM policy. | `string` | `"self-manage-credentials"` | no |
+| require\_mfa | Requires users to login with MFA when managing their own credentials. | `bool` | `true` | no |
 
 ## Outputs
 

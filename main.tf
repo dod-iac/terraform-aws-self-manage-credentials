@@ -1,13 +1,13 @@
 /**
  * ## Usage
  *
- * Configures IAM policy to allow users to manage their own credentials.
+ * Configures IAM policy to allow users to manage their own credentials and optionally enforces MFA.
  *
- * Policy pulled from [AWS: Allows IAM users to manage their own credentials on the My Security Credentials page](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_my-sec-creds-self-manage-no-mfa.html)
+ * Policy pulled from [AWS: Allows IAM users to manage their own credentials on the My Security Credentials page](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_examples_aws_my-sec-creds-self-manage-no-mfa.html) but heavily modified.
  *
  * Creates the following resources:
  *
- * * IAM policy allowing users to manage their own security credentials.
+ * * IAM policy allowing users to manage their own security credentials and optionally enforces MFA.
  * * IAM group policy attachment for defining which IAM groups can manage their own credentials.
  * * IAM user policy attachment for defining which IAM users can manage their own credentials.
  *
@@ -36,12 +36,22 @@
 data "aws_partition" "current" {}
 
 data "aws_iam_policy_document" "main" {
+  dynamic "statement" {
+    for_each = var.allow_account_aliases ? [var.allow_account_aliases] : []
+    content {
+      sid    = "AllowListAccountAliases"
+      effect = "Allow"
+      actions = [
+        "iam:ListAccountAliases",
+      ]
+      resources = ["*"]
+    }
+  }
   statement {
-    sid    = "AllowViewAccountInfo"
+    sid    = "AllowGetAccountPasswordPolicy"
     effect = "Allow"
     actions = [
       "iam:GetAccountPasswordPolicy",
-      "iam:GetAccountSummary",
     ]
     resources = ["*"]
   }
@@ -53,6 +63,14 @@ data "aws_iam_policy_document" "main" {
       "iam:GetUser",
     ]
     resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+    dynamic "condition" {
+      for_each = var.require_mfa ? [true] : []
+      content {
+        test     = "Bool"
+        variable = "aws:MultiFactorAuthPresent"
+        values   = ["true"]
+      }
+    }
   }
   dynamic "statement" {
     for_each = var.allow_access_keys ? [var.allow_access_keys] : []
@@ -68,6 +86,14 @@ data "aws_iam_policy_document" "main" {
       resources = [
         format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
       ]
+      dynamic "condition" {
+        for_each = var.require_mfa ? [true] : []
+        content {
+          test     = "Bool"
+          variable = "aws:MultiFactorAuthPresent"
+          values   = ["true"]
+        }
+      }
     }
   }
   dynamic "statement" {
@@ -84,6 +110,14 @@ data "aws_iam_policy_document" "main" {
       resources = [
         format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
       ]
+      dynamic "condition" {
+        for_each = var.require_mfa ? [true] : []
+        content {
+          test     = "Bool"
+          variable = "aws:MultiFactorAuthPresent"
+          values   = ["true"]
+        }
+      }
     }
   }
   dynamic "statement" {
@@ -101,6 +135,14 @@ data "aws_iam_policy_document" "main" {
       resources = [
         format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
       ]
+      dynamic "condition" {
+        for_each = var.require_mfa ? [true] : []
+        content {
+          test     = "Bool"
+          variable = "aws:MultiFactorAuthPresent"
+          values   = ["true"]
+        }
+      }
     }
   }
   dynamic "statement" {
@@ -118,14 +160,106 @@ data "aws_iam_policy_document" "main" {
       resources = [
         format("arn:%s:iam::*:user/$${aws:username}", data.aws_partition.current.partition)
       ]
+      dynamic "condition" {
+        for_each = var.require_mfa ? [true] : []
+        content {
+          test     = "Bool"
+          variable = "aws:MultiFactorAuthPresent"
+          values   = ["true"]
+        }
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.allow_mfa_device ? [var.allow_mfa_device] : []
+    content {
+      sid    = "AllowListVirtualMFADevices"
+      effect = "Allow"
+      actions = [
+        "iam:ListVirtualMFADevices"
+      ]
+      resources = ["arn:${data.aws_partition.current.partition}:iam::*:mfa/*"]
+    }
+  }
+  dynamic "statement" {
+    for_each = var.allow_mfa_device ? [var.allow_mfa_device] : []
+    content {
+      sid    = "AllowManageMFADevice"
+      effect = "Allow"
+      actions = [
+        "iam:ListMFADevices",
+        "iam:EnableMFADevice",
+        "iam:ResyncMFADevice"
+      ]
+      resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+    }
+  }
+  dynamic "statement" {
+    for_each = var.allow_mfa_device ? [var.allow_mfa_device] : []
+    content {
+      sid    = "AllowDeactivateMFADevice"
+      effect = "Allow"
+      actions = [
+        "iam:DeactivateMFADevice"
+      ]
+      resources = ["arn:${data.aws_partition.current.partition}:iam::*:user/$${aws:username}"]
+      # This action requires MFA to be used.  If MFA was not required,
+      # an attacker with a compromised password could disable MFA and change it.
+      condition {
+        test     = "Bool"
+        variable = "aws:MultiFactorAuthPresent"
+        values   = ["true"]
+      }
+    }
+  }
+  dynamic "statement" {
+    for_each = var.allow_mfa_device ? [var.allow_mfa_device] : []
+    content {
+      sid    = "AllowManageVirtualMFADevice"
+      effect = "Allow"
+      actions = [
+        # If an MFA device does not exist yet, then your session won't have MFA set.
+        "iam:CreateVirtualMFADevice",
+        # You must deactivate a user's MFA device before you can delete it,
+        # therefore, this statement does not need a MultiFactorAuthPresent condition.
+        "iam:DeleteVirtualMFADevice"
+      ]
+      resources = ["arn:${data.aws_partition.current.partition}:iam::*:mfa/$${aws:username}"]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.enforce_mfa ? [var.enforce_mfa] : []
+    content {
+      sid    = "BlockMostAccessUnlessSignedInWithMFA"
+      effect = "Deny"
+      not_actions = [
+        # IAM Actions
+        "iam:ListAccountAliases",
+        # MFA Actions
+        "iam:CreateVirtualMFADevice",
+        "iam:DeleteVirtualMFADevice",
+        "iam:ListVirtualMFADevices",
+        "iam:EnableMFADevice",
+        "iam:ResyncMFADevice",
+        "iam:ListMFADevices",
+        # STS Actions
+        "sts:GetSessionToken",
+      ]
+      resources = ["*"]
+      condition {
+        test     = "BoolIfExists"
+        variable = "aws:MultiFactorAuthPresent"
+        values   = ["false"]
+      }
     }
   }
 }
 
 resource "aws_iam_policy" "main" {
-  name        = "self-manage-credentials"
+  name        = var.name
   path        = "/"
-  description = "Allows an IAM user to manage their own credentials"
+  description = var.description
   policy      = data.aws_iam_policy_document.main.json
 }
 
